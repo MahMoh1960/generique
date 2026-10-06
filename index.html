@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
+<meta name="color-scheme" content="dark">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Générique défilant</title>
 <meta name="theme-color" content="#000000">
@@ -79,6 +80,39 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:inherit}
 #bar .btn{padding:8px 14px;font-size:1rem}
 #bar input[type=range]{flex:0 1 160px}
 #bar span{color:var(--dim);font-size:1rem;min-width:3.6em;text-align:center}
+
+/* ---- Agrandissement pour la lisibilité ---- */
+:root{color-scheme:dark}
+#setup{max-width:720px;padding-top:88px}
+h1{font-size:2.6rem}
+p.hint{font-size:1.25rem;line-height:1.45}
+textarea{font-size:1.4rem;min-height:260px}
+.btn{font-size:1.4rem;padding:14px 22px}
+.btn.main{padding:16px 30px}
+label.sp,.sw{font-size:1.4rem}
+#logoName,#voiceName{font-size:1.2rem}
+#sizev,#ratev,#pitchv{font-size:1.3rem;min-width:4.2em}
+select,input[type=number]{font-size:1.4rem;padding:12px 14px}
+input[type=number]{width:96px}
+input[type=checkbox]{width:32px;height:32px}
+input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;height:40px}
+input[type=range]::-webkit-slider-runnable-track{height:8px;background:#555;border-radius:4px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:#fff;margin-top:-11px}
+input[type=range]::-moz-range-track{height:8px;background:#555;border-radius:4px}
+input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;background:#fff;border:0}
+.swg{gap:16px}
+.swg button,.swg input[type=color]{width:54px;height:54px}
+#tools,#alg{gap:10px}
+#tools button{width:54px;height:54px}
+#tools svg{width:28px;height:28px}
+#menu{top:calc(env(safe-area-inset-top,0px) + 74px);min-width:260px}
+#menu button{font-size:1.4rem;padding:16px 18px}
+#menu svg{width:24px;height:24px}
+#toast{font-size:1.3rem}
+#bar{gap:12px}
+#bar .btn{font-size:1.3rem;padding:12px 18px}
+#bar span,.cl{font-size:1.3rem}
+.cl input[type=color]{width:50px;height:50px}
 </style>
 </head>
 <body>

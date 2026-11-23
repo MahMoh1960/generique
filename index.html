@@ -30,6 +30,7 @@ textarea:focus,button:focus-visible,input:focus-visible,select:focus-visible{out
 .btn:disabled{opacity:.5}
 input[type=file]{display:none}
 #logoName,#voiceName{color:var(--dim);font-size:.95rem}
+label.ck{flex-wrap:nowrap;align-items:flex-start}
 label.sp{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:1.05rem}
 input[type=number]{width:72px;background:#000;border:1px solid #fff;padding:7px;font-size:1.1rem;border-radius:2px;text-align:center;-moz-appearance:textfield}
 input[type=number]::-webkit-inner-spin-button{display:none}
@@ -116,12 +117,12 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:inherit}
   <div class="sw"><span>Couleur du texte</span><div class="swg" id="swText" role="radiogroup" aria-label="Couleur du texte"></div></div>
   <div class="sw"><span>Couleur du fond</span><div class="swg" id="swBg" role="radiogroup" aria-label="Couleur du fond"></div></div>
   <div class="sw">
-    <label class="sp"><input type="checkbox" id="narr"> Narrateur (lecture synchronisée avec le défilement)</label>
+    <label class="sp ck"><input type="checkbox" id="narr"> Narrateur (lecture synchronisée avec le défilement)</label>
     <label class="sp">Langue <select id="nlang"><option value="ar">Arabe</option><option value="fr">Français</option><option value="en">Anglais (américain)</option></select></label>
     <label class="sp">Voix <select id="voice"><option value="auto">Voix masculine (automatique)</option></select></label>
     <label class="sp">Débit <input type="range" id="rate" min="60" max="140" value="90"><span id="ratev">0,9×</span></label>
     <label class="sp">Hauteur <input type="range" id="pitch" min="50" max="120" value="85"><span id="pitchv">0,85</span></label>
-    <label class="sp"><input type="checkbox" id="autoSync"> Synchronisation automatique (le défilement attend la fin de chaque ligne)</label>
+    <label class="sp ck"><input type="checkbox" id="autoSync"> Synchronisation automatique (le défilement attend la fin de chaque ligne)</label>
     <div class="row">
       <label class="btn" for="fileVoice" tabindex="0">Voix pour la vidéo (audio)</label>
       <input type="file" id="fileVoice" accept="audio/*">
@@ -417,6 +418,7 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:inherit}
   };
 
   /* ---------- Narrateur (arabe, français, anglais américain) ---------- */
+  var NT=(window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.TextToSpeech)||null;
   var ps=[],spk=[],ni=0,qi=0,done=0,speaking=false,tok=0,voices=[],narr=false,rate=0.9,pitch=0.85,autoSync=false,voiceUrl=null,nl="ar";
   var LANGS={ar:["ar-SA",/^ar/i],fr:["fr-FR",/^fr/i],en:["en-US",/^en[-_]us/i]};
   var MALE=/hamed|shakir|salem|taim|fahed|hamdan|omar|maged|majed|naayf|tarik|bassel|laith|abdullah|youssef|thomas|paul|henri|claude|nicolas|antoine|jean|daniel|david|mark|guy|alex|fred|james|george|aaron|male|homme/i,
@@ -436,7 +438,7 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:inherit}
     if(cur&&sel.querySelector('option[value="'+cur+'"]'))sel.value=cur;
   }
   if(window.speechSynthesis){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
-  else{$("narr").disabled=true;$("narrHint").textContent="La lecture vocale n'est pas disponible sur ce navigateur."}
+  else if(!NT){$("narrHint").textContent="La lecture vocale n'est pas disponible sur cet appareil."}
   $("nlang").onchange=function(){nl=this.value;$("voice").value="auto";loadVoices();stopSpeech();qi=done=ni=0};
   $("narr").onchange=function(){narr=this.checked;if(!narr)stopSpeech()};
   $("rate").oninput=function(){rate=this.value/100;$("ratev").textContent=rate.toFixed(1).replace(".",",")+"×"};
@@ -447,8 +449,12 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:inherit}
     u.lang=v?v.lang:LANGS[nl][0];if(v)u.voice=v;u.rate=rate;u.pitch=pitch;
     return u;
   }
+  function nat(text,q,end){
+    NT.speak({text:text,lang:LANGS[nl][0],rate:rate,pitch:pitch,volume:1,queueStrategy:q}).then(end,end);
+  }
   function speak(text){
     var my=++tok;speaking=true;
+    if(NT){nat(text,0,function(){if(my===tok){speaking=false;ni++}});return}
     try{
       var u=mkUtt(text);
       u.onend=u.onerror=function(){if(my===tok){speaking=false;ni++}};
@@ -457,13 +463,14 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:inherit}
   }
   function queueSpeak(text){
     var my=tok;
+    if(NT){nat(text,1,function(){if(my===tok)done++});return}
     try{
       var u=mkUtt(text);
       u.onend=u.onerror=function(){if(my===tok)done++};
       speechSynthesis.speak(u);
     }catch(e){done++}
   }
-  function stopSpeech(){tok++;speaking=false;qi=done;try{speechSynthesis.cancel()}catch(e){}}
+  function stopSpeech(){tok++;speaking=false;qi=done;try{if(NT)NT.stop();else speechSynthesis.cancel()}catch(e){}}
   function prepNarr(){
     ps=[].slice.call(roll.querySelectorAll("p"));spk=[];
     ps.forEach(function(p,i){if(!p.classList.contains("gap"))spk.push(i)});

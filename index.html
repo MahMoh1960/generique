@@ -9,131 +9,90 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
-
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Cinzel:wght@500;600&display=swap">
 <style>
-:root{--bg:#000;--fg:#fff;--dim:#9a9a9a;--line:#333;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-:root:not([data-theme="light"]){--bg:#000}
+:root{--bg:#000;--fg:#fff;--dim:#9a9a9a;--line:#333;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 html,body{margin:0;height:100%}
-body{background:#000;color:var(--fg);font-family:"Cormorant Garamond",Georgia,serif}
-button,input,textarea{font:inherit;color:inherit}
-#setup{max-width:640px;margin:0 auto;padding:64px 20px 40px;display:flex;flex-direction:column;gap:18px;min-height:100%}
-h1{font-weight:600;font-size:2rem;margin:0;letter-spacing:.02em}
-p.hint{margin:0;color:var(--dim);font-size:1.05rem}
-textarea{width:100%;min-height:240px;background:#000;border:1px solid var(--line);padding:14px;font-size:1.15rem;line-height:1.5;resize:vertical;border-radius:2px}
-textarea:focus,button:focus-visible,input:focus-visible{outline:2px solid #fff;outline-offset:2px}
-.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-.btn{background:#000;border:1px solid #fff;padding:10px 18px;cursor:pointer;font-size:1.1rem;border-radius:2px}
+body{background:#000;color:var(--fg);font-family:"Cormorant Garamond",Georgia,serif;font-size:1.05rem}
+button,input,textarea,select{font:inherit;color:inherit}
+#setup{max-width:680px;margin:0 auto;padding:28px 18px 40px;display:flex;flex-direction:column;gap:16px;min-height:100%}
+h1{font-weight:600;font-size:1.9rem;margin:0;letter-spacing:.02em}
+p.hint{margin:0;color:var(--dim);font-size:1rem;line-height:1.4}
+textarea{width:100%;min-height:220px;background:#000;border:1px solid var(--line);padding:12px;font-size:1.15rem;line-height:1.5;resize:vertical;border-radius:2px}
+textarea:focus,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{background:#000;border:1px solid #fff;padding:9px 16px;cursor:pointer;font-size:1.05rem;border-radius:2px}
 .btn:hover{background:#fff;color:#000}
-.btn.main{background:#fff;color:#000;font-weight:600;padding:12px 26px}
+.btn.main{background:#fff;color:#000;font-weight:600;padding:11px 24px}
 .btn.main:hover{background:#ddd}
+.btn:disabled{opacity:.5}
 input[type=file]{display:none}
-#logoName{color:var(--dim);font-size:1rem}
-label.sp{display:flex;gap:12px;align-items:center;font-size:1.1rem}
-input[type=range]{accent-color:#fff;flex:1;min-width:120px}
-input[type=number]{width:76px;background:#000;border:1px solid #fff;padding:8px;font-size:1.1rem;border-radius:2px;text-align:center}
-#cutUndo[hidden]{display:none}
+#logoName,#voiceName{color:var(--dim);font-size:.95rem}
+label.sp{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:1.05rem}
+input[type=number]{width:72px;background:#000;border:1px solid #fff;padding:7px;font-size:1.1rem;border-radius:2px;text-align:center;-moz-appearance:textfield}
+input[type=number]::-webkit-inner-spin-button{display:none}
+.num{display:inline-flex;gap:6px;align-items:center}
+.num .btn{padding:5px 13px;font-size:1.2rem;line-height:1}
 input[type=checkbox]{width:22px;height:22px;accent-color:#fff;flex:none}
-#noVoice[hidden]{display:none}
-#ratev{min-width:3.6em;color:var(--dim)}
-select{flex:1;min-width:180px;background:#000;border:1px solid #fff;padding:10px 12px;font-size:1.1rem;border-radius:2px}
-select:focus-visible{outline:2px solid #fff;outline-offset:2px}
-.swg.seg button{width:auto;height:auto;border-radius:2px;padding:9px 16px;background:#000;color:#fff;font-size:1.05rem}
-.swg.seg button[aria-checked="true"]{background:#fff;color:#000;outline:none}
-#roll.al-left img{margin:0 auto 14vh 0}
-#roll.al-right img{margin:0 0 14vh auto}
-.sw{display:flex;flex-direction:column;gap:8px;font-size:1.1rem}
-.swg{display:flex;gap:12px;flex-wrap:wrap}
-.swg button{width:38px;height:38px;border-radius:50%;border:1px solid #666;cursor:pointer;padding:0}
+[hidden]{display:none!important}
+select{flex:1;min-width:160px;background:#000;border:1px solid #fff;padding:8px 10px;font-size:1.05rem;border-radius:2px}
+input[type=range]{accent-color:#fff;flex:1;min-width:120px}
+#ratev,#pitchv,#sizev{min-width:3.4em;color:var(--dim)}
+.sw{display:flex;flex-direction:column;gap:8px;font-size:1.05rem}
+.swg{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.swg button.c{width:36px;height:36px;border-radius:50%;border:1px solid #666;cursor:pointer;padding:0}
 .swg button[aria-checked="true"]{outline:2px solid #fff;outline-offset:3px}
-.swg input[type=color],.cl input[type=color]{width:38px;height:38px;padding:0;border:1px solid #666;background:none;cursor:pointer}
+.swg input[type=color],.cl input[type=color]{width:36px;height:36px;padding:0;border:1px solid #666;background:none;cursor:pointer}
 .swg input[type=color]{border-radius:50%}
 input[type=color]::-webkit-color-swatch-wrapper{padding:0}
 input[type=color]::-webkit-color-swatch{border:0;border-radius:inherit}
-.cl{display:flex;align-items:center;gap:6px;color:var(--dim);font-size:1rem}
-#sizev{min-width:3.6em;color:var(--dim)}
-#roll p{margin:0;font-size:calc(clamp(1.3rem,3.4vw,2.4rem)*var(--ts,1));line-height:1.6;font-weight:500;letter-spacing:.03em}
-#roll p.gap{height:1.6em}
-#tools{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);right:12px;z-index:30;display:flex;gap:8px}
-#alg{display:flex;gap:8px}
-#tools button{width:40px;height:40px;border-radius:50%;border:1px solid #666;background:rgba(0,0,0,.6);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
-#tools button[aria-checked="true"]{background:#fff;color:#000;border-color:#fff}
-#menu{position:fixed;top:calc(env(safe-area-inset-top,0px) + 58px);right:12px;z-index:30;background:#000;border:1px solid #fff;min-width:210px;display:flex;flex-direction:column}
-#menu[hidden],#menu button[hidden]{display:none}
-#menu button{background:none;border:0;padding:13px 16px;text-align:left;cursor:pointer;display:flex;gap:12px;align-items:center;font-size:1.1rem}
+.algs button{display:flex;gap:6px;align-items:center;background:#000;border:1px solid #fff;color:#fff;padding:7px 12px;border-radius:2px;cursor:pointer;font-size:1rem}
+.algs button svg{width:18px;height:18px}
+.algs button[aria-checked="true"]{background:#fff;color:#000;outline:none}
+.cl{display:flex;align-items:center;gap:6px;color:var(--dim);font-size:.95rem}
+#tools{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);right:12px;z-index:30}
+#tools button{width:38px;height:38px;border-radius:50%;border:1px solid #666;background:rgba(0,0,0,.6);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+#tools svg{width:18px;height:18px}
+#menu{position:fixed;top:calc(env(safe-area-inset-top,0px) + 56px);right:12px;z-index:30;background:#000;border:1px solid #fff;min-width:210px;display:flex;flex-direction:column}
+#menu button{background:none;border:0;padding:12px 14px;text-align:left;cursor:pointer;display:flex;gap:10px;align-items:center;font-size:1.05rem}
 #menu button:hover{background:#fff;color:#000}
+#menu svg{width:18px;height:18px}
 #toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 90px);transform:translateX(-50%);background:#fff;color:#000;padding:8px 16px;z-index:40;opacity:0;pointer-events:none;transition:opacity .3s;font-size:1.05rem}
 #toast.on{opacity:1}
 #recbox{display:flex;flex-direction:column;gap:10px}
-#recbox[hidden]{display:none}
 #prog{height:4px;background:var(--line)}
 #progfill{height:100%;width:0;background:#fff}
 #stage{position:fixed;inset:0;background:#000;overflow:hidden;display:none}
 #roll{position:absolute;left:0;right:0;top:0;text-align:center;padding:0 7vw;will-change:transform}
 #roll img{display:block;max-width:min(60vw,360px);max-height:40vh;margin:0 auto 14vh}
+#roll.al-left img{margin:0 auto 14vh 0}
+#roll.al-right img{margin:0 0 14vh auto}
 #roll p{margin:0;font-size:calc(clamp(1.3rem,3.4vw,2.4rem)*var(--ts,1));line-height:1.6;font-weight:500;letter-spacing:.03em}
 #roll p.gap{height:1.6em}
-#bar{position:absolute;left:0;right:0;bottom:0;padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;background:linear-gradient(transparent,rgba(0,0,0,.92));transition:opacity .4s}
+#bar{position:absolute;left:0;right:0;bottom:0;padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;background:linear-gradient(transparent,rgba(0,0,0,.92));transition:opacity .4s}
 #bar.hide{opacity:0;pointer-events:none}
-#bar .btn{padding:8px 14px;font-size:1rem}
-#bar input[type=range]{flex:0 1 160px}
-#bar span{color:var(--dim);font-size:1rem;min-width:3.6em;text-align:center}
-
-/* ---- Agrandissement pour la lisibilité ---- */
-:root{color-scheme:dark}
-#setup{max-width:720px;padding-top:88px}
-h1{font-size:2.6rem}
-p.hint{font-size:1.25rem;line-height:1.45}
-textarea{font-size:1.4rem;min-height:260px}
-.btn{font-size:1.4rem;padding:14px 22px}
-.btn.main{padding:16px 30px}
-label.sp,.sw{font-size:1.4rem}
-#logoName,#voiceName{font-size:1.2rem}
-#sizev,#ratev,#pitchv{font-size:1.3rem;min-width:4.2em}
-select,input[type=number]{font-size:1.4rem;padding:12px 14px}
-input[type=number]{width:96px}
-input[type=checkbox]{width:32px;height:32px}
-input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;height:40px}
-input[type=range]::-webkit-slider-runnable-track{height:8px;background:#555;border-radius:4px}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:#fff;margin-top:-11px}
-input[type=range]::-moz-range-track{height:8px;background:#555;border-radius:4px}
-input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;background:#fff;border:0}
-.swg{gap:16px}
-.swg button,.swg input[type=color]{width:54px;height:54px}
-#tools,#alg{gap:10px}
-#tools button{width:54px;height:54px}
-#tools svg{width:28px;height:28px}
-#menu{top:calc(env(safe-area-inset-top,0px) + 74px);min-width:260px}
-#menu button{font-size:1.4rem;padding:16px 18px}
-#menu svg{width:24px;height:24px}
-#toast{font-size:1.3rem}
-#bar{gap:12px}
-#bar .btn{font-size:1.3rem;padding:12px 18px}
-#bar span,.cl{font-size:1.3rem}
-.cl input[type=color]{width:50px;height:50px}
+#bar .btn{padding:7px 12px;font-size:.95rem}
+#bar .num .btn{font-size:1.1rem;padding:4px 11px}
+#bar input[type=number]{width:62px;padding:6px;font-size:1rem}
+#bar .algs button{padding:6px 9px}
 </style>
 </head>
 <body>
 <div id="tools">
-  <div id="alg" role="radiogroup" aria-label="Alignement du texte">
-    <button type="button" role="radio" data-v="left" aria-label="Aligner à gauche" title="À gauche" aria-checked="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h14"/></svg></button>
-    <button type="button" role="radio" data-v="center" aria-label="Centrer" title="Centré" aria-checked="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M7 12h10M5 18h14"/></svg></button>
-    <button type="button" role="radio" data-v="right" aria-label="Aligner à droite" title="À droite" aria-checked="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M10 12h10M6 18h14"/></svg></button>
-  </div>
   <button id="mbtn" aria-label="Partager" aria-haspopup="true" aria-expanded="false">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
   </button>
 </div>
 <div id="menu" role="menu" hidden>
-  <button role="menuitem" id="miLink"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>Partager le lien</button>
-  <button role="menuitem" id="miVid" hidden><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>Partager la vidéo</button>
+  <button role="menuitem" id="miLink">Partager le lien</button>
+  <button role="menuitem" id="miVid" hidden>Partager la vidéo</button>
 </div>
 <div id="toast" role="status"></div>
 <main id="setup">
   <h1>Générique défilant</h1>
-  <p class="hint">Collez votre texte ou importez un fichier .txt. Chaque ligne sera centrée ; une ligne vide crée un espace.</p>
+  <p class="hint">Collez votre texte ou importez un fichier .txt. Une ligne vide crée un espace.</p>
   <textarea id="txt" aria-label="Texte du générique" placeholder="Saisissez ou collez votre texte ici…"></textarea>
   <div class="row">
     <label class="sp" for="cutN">Mots par ligne <input type="number" id="cutN" min="1" max="30" value="4"></label>
@@ -148,14 +107,18 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
     <span id="logoName"></span>
     <button class="btn" id="noLogo" hidden>Retirer</button>
   </div>
-  <label class="sp">Vitesse <input type="range" id="speed0" min="20" max="200" value="60"></label>
+  <div class="sw"><span>Alignement du texte</span><div class="swg seg algs" data-txt="1" role="radiogroup" aria-label="Alignement du texte"></div></div>
+  <label class="sp">Vitesse
+    <span class="num"><button type="button" class="btn st" data-d="-5" aria-label="Moins vite">−</button><input type="number" id="speed0" min="20" max="200" step="5" value="60" inputmode="numeric"><button type="button" class="btn st" data-d="5" aria-label="Plus vite">+</button></span>
+  </label>
   <label class="sp">Police <select id="font"></select></label>
   <label class="sp">Taille du texte <input type="range" id="size" min="60" max="180" value="100"><span id="sizev">100 %</span></label>
   <div class="sw"><span>Couleur du texte</span><div class="swg" id="swText" role="radiogroup" aria-label="Couleur du texte"></div></div>
   <div class="sw"><span>Couleur du fond</span><div class="swg" id="swBg" role="radiogroup" aria-label="Couleur du fond"></div></div>
   <div class="sw">
-    <label class="sp"><input type="checkbox" id="narr"> Narrateur arabe (lecture synchronisée avec le défilement)</label>
-    <label class="sp">Voix <select id="voice"><option value="auto">Voix masculine classique (automatique)</option></select></label>
+    <label class="sp"><input type="checkbox" id="narr"> Narrateur (lecture synchronisée avec le défilement)</label>
+    <label class="sp">Langue <select id="nlang"><option value="ar">Arabe</option><option value="fr">Français</option><option value="en">Anglais (américain)</option></select></label>
+    <label class="sp">Voix <select id="voice"><option value="auto">Voix masculine (automatique)</option></select></label>
     <label class="sp">Débit <input type="range" id="rate" min="60" max="140" value="90"><span id="ratev">0,9×</span></label>
     <label class="sp">Hauteur <input type="range" id="pitch" min="50" max="120" value="85"><span id="pitchv">0,85</span></label>
     <label class="sp"><input type="checkbox" id="autoSync"> Synchronisation automatique (le défilement attend la fin de chaque ligne)</label>
@@ -165,7 +128,7 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
       <span id="voiceName"></span>
       <button class="btn" id="noVoice" type="button" hidden>Retirer</button>
     </div>
-    <p class="hint" id="narrHint">La voix est entendue pendant l'aperçu : réglez la vitesse de défilement pour caler la voix, ou cochez la synchronisation automatique. Pour la mêler à la vidéo MP4, importez un fichier audio de la voix : le défilement s'ajuste alors à sa durée.</p>
+    <p class="hint" id="narrHint">La voix est entendue pendant l'aperçu : réglez la vitesse pour la caler, ou cochez la synchronisation automatique. Pour la mêler à la vidéo, importez un fichier audio : le défilement s'ajuste alors à sa durée.</p>
   </div>
   <label class="sp">Qualité de la vidéo
     <select id="vres">
@@ -194,8 +157,8 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
   <div id="bar">
     <button class="btn" id="pp">Pause</button>
     <button class="btn" id="rp">Rejouer</button>
-    <input type="range" id="speed" min="20" max="200" value="60" aria-label="Vitesse">
-    <span id="sv">60</span>
+    <span class="num"><button type="button" class="btn st" data-d="-5" aria-label="Moins vite">−</button><input type="number" id="speed" min="20" max="200" step="5" value="60" inputmode="numeric" aria-label="Vitesse"><button type="button" class="btn st" data-d="5" aria-label="Plus vite">+</button></span>
+    <div class="swg seg algs" role="radiogroup" aria-label="Alignement du texte"></div>
     <label class="cl">Texte <input type="color" id="barFg" value="#ffffff" aria-label="Couleur du texte"></label>
     <label class="cl">Fond <input type="color" id="barBg" value="#000000" aria-label="Couleur du fond"></label>
     <button class="btn" id="fs">Plein écran</button>
@@ -218,9 +181,20 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
     var r=new FileReader();r.onload=function(){logo=r.result;$("logoName").textContent=f.name;$("noLogo").hidden=false};r.readAsDataURL(f);
   });
   $("noLogo").onclick=function(){logo=null;$("logoName").textContent="";this.hidden=true;$("fileLogo").value=""};
-  $("speed0").oninput=function(){setSpeed(this.value)};
-  $("speed").oninput=function(){setSpeed(this.value)};
-  function setSpeed(v){speed=+v;$("speed0").value=v;$("speed").value=v;$("sv").textContent=v}
+
+  /* Vitesse en chiffres */
+  function setSpeed(v,src){
+    v=Math.max(20,Math.min(200,Math.round(+v)||60));speed=v;
+    ["speed0","speed"].forEach(function(id){if(id!==src)$(id).value=v});
+    if(src)$(src).value=v;
+  }
+  ["speed0","speed"].forEach(function(id){
+    $(id).oninput=function(){var n=+this.value;if(n>=20&&n<=200){speed=n;var o=$(id==="speed"?"speed0":"speed");o.value=n}};
+    $(id).onchange=function(){setSpeed(this.value,id)};
+  });
+  document.querySelectorAll(".st").forEach(function(b){
+    b.onclick=function(){setSpeed(speed+(+b.dataset.d))};
+  });
 
   var ts=1,fg="#ffffff",bg="#000000";
   var FONTS=[
@@ -244,7 +218,7 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
     var box=$(id);
     list.forEach(function(c){
       var b=document.createElement("button");
-      b.type="button";b.setAttribute("role","radio");b.setAttribute("aria-label",c[0]);b.title=c[0];b.dataset.v=c[1];
+      b.type="button";b.className="c";b.setAttribute("role","radio");b.setAttribute("aria-label",c[0]);b.title=c[0];b.dataset.v=c[1];
       b.style.background=c[1];b.setAttribute("aria-checked",c[1]===cur?"true":"false");
       b.onclick=function(){onPick(c[1])};
       box.appendChild(b);
@@ -264,15 +238,26 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
   swatches("swBg",BG_COLORS,bg,setBg);
   $("barFg").oninput=function(){setFg(this.value)};
   $("barBg").oninput=function(){setBg(this.value)};
-  $("size").oninput=function(){ts=this.value/100;$("sizev").textContent=this.value+" %"};
+  $("size").oninput=function(){ts=this.value/100;$("sizev").textContent=this.value+" %";applyStyle()};
+
+  /* Alignement (réglage + barre du défilement) */
   var al="center";
-  $("alg").querySelectorAll("button").forEach(function(b){
-    b.onclick=function(){
-      al=b.dataset.v;
-      $("alg").querySelectorAll("button").forEach(function(x){x.setAttribute("aria-checked",x.dataset.v===al?"true":"false")});
-      applyStyle();
-    };
+  var AL=[["left","Gauche","M4 6h16M4 12h10M4 18h14"],["center","Centré","M4 6h16M7 12h10M5 18h14"],["right","Droite","M4 6h16M10 12h10M6 18h14"]];
+  document.querySelectorAll(".algs").forEach(function(box){
+    AL.forEach(function(a){
+      var b=document.createElement("button");
+      b.type="button";b.setAttribute("role","radio");b.dataset.al=a[0];b.setAttribute("aria-label",a[1]);b.title=a[1];
+      b.setAttribute("aria-checked",a[0]===al?"true":"false");
+      b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="'+a[2]+'"/></svg>'+(box.dataset.txt?"<span>"+a[1]+"</span>":"");
+      b.onclick=function(){setAlign(a[0])};
+      box.appendChild(b);
+    });
   });
+  function setAlign(v){
+    al=v;
+    document.querySelectorAll(".algs button").forEach(function(x){x.setAttribute("aria-checked",x.dataset.al===al?"true":"false")});
+    applyStyle();
+  }
   function applyStyle(){
     stage.style.background=bg;roll.style.color=fg;roll.style.fontFamily=fam;roll.style.textAlign=al;roll.className="al-"+al;roll.style.setProperty("--ts",ts);
   }
@@ -287,7 +272,7 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
     });
   }
   function start(){
-    y=stage.clientHeight;playing=true;last=0;ni=0;done=0;stopSpeech();$("pp").textContent="Pause";
+    y=stage.clientHeight;playing=true;last=0;ni=0;done=0;qi=0;stopSpeech();$("pp").textContent="Pause";
     cancelAnimationFrame(raf);raf=requestAnimationFrame(tick);
   }
   function tick(t){
@@ -325,13 +310,14 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
   stage.addEventListener("pointermove",showBar);
   stage.addEventListener("pointerdown",showBar);
   document.addEventListener("keydown",function(e){
-    if(stage.style.display!=="block")return;
+    if(stage.style.display!=="block"||e.target.tagName==="INPUT")return;
     if(e.code==="Space"){e.preventDefault();$("pp").click()}
     else if(e.key==="f"||e.key==="F"){$("fs").click()}
-    else if(e.key==="ArrowUp"){setSpeed(Math.min(200,speed+10))}
-    else if(e.key==="ArrowDown"){setSpeed(Math.max(20,speed-10))}
+    else if(e.key==="ArrowUp"){setSpeed(speed+10)}
+    else if(e.key==="ArrowDown"){setSpeed(speed-10)}
     else if(e.key==="r"||e.key==="R"){$("rp").click()}
   });
+
   /* ---------- Enregistrement vidéo ---------- */
   var recBusy=false,recCancel=false,recBlob=null,recExt="mp4";
   function pickMime(wa){
@@ -430,11 +416,12 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
     }
   };
 
-  /* ---------- Narrateur arabe ---------- */
-  var ps=[],spk=[],ni=0,qi=0,done=0,speaking=false,tok=0,voices=[],narr=false,rate=0.9,pitch=0.85,autoSync=false,voiceUrl=null;
-  var MALE=/hamed|shakir|salem|taim|fahed|hamdan|omar|maged|majed|naayf|tarik|bassel|laith|abdullah|youssef|male|homme/i,
-      FEMALE=/zariyah|salma|hoda|amina|fatima|laila|layla|maryam|reem|noura|sana|amany|zeina|female|femme/i;
-  function score(v){return (MALE.test(v.name)?4:0)-(FEMALE.test(v.name)?5:0)+(/^ar-SA/i.test(v.lang)?2:0)}
+  /* ---------- Narrateur (arabe, français, anglais américain) ---------- */
+  var ps=[],spk=[],ni=0,qi=0,done=0,speaking=false,tok=0,voices=[],narr=false,rate=0.9,pitch=0.85,autoSync=false,voiceUrl=null,nl="ar";
+  var LANGS={ar:["ar-SA",/^ar/i],fr:["fr-FR",/^fr/i],en:["en-US",/^en[-_]us/i]};
+  var MALE=/hamed|shakir|salem|taim|fahed|hamdan|omar|maged|majed|naayf|tarik|bassel|laith|abdullah|youssef|thomas|paul|henri|claude|nicolas|antoine|jean|daniel|david|mark|guy|alex|fred|james|george|aaron|male|homme/i,
+      FEMALE=/zariyah|salma|hoda|amina|fatima|laila|layla|maryam|reem|noura|sana|amany|zeina|amelie|audrey|marie|julie|denise|eloise|hortense|sonia|samantha|zira|susan|jenny|aria|emma|joanna|ava|karen|female|femme/i;
+  function score(v){return (MALE.test(v.name)?4:0)-(FEMALE.test(v.name)?5:0)+(v.lang.replace("_","-")===LANGS[nl][0]?2:0)}
   function pickVoice(){
     var val=$("voice").value;
     if(val==="auto"){var b=null;voices.forEach(function(v){if(!b||score(v)>score(b))b=v});return b}
@@ -442,21 +429,22 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
   }
   function loadVoices(){
     if(!window.speechSynthesis)return;
-    voices=speechSynthesis.getVoices().filter(function(v){return /^ar/i.test(v.lang)});
+    voices=speechSynthesis.getVoices().filter(function(v){return LANGS[nl][1].test(v.lang)});
     var sel=$("voice"),cur=sel.value;sel.innerHTML="";
-    var a=document.createElement("option");a.value="auto";a.textContent="Voix masculine classique (automatique)";sel.appendChild(a);
+    var a=document.createElement("option");a.value="auto";a.textContent="Voix masculine (automatique)";sel.appendChild(a);
     voices.forEach(function(v,i){var o=document.createElement("option");o.value=i;o.textContent=v.name+" ("+v.lang+")";sel.appendChild(o)});
     if(cur&&sel.querySelector('option[value="'+cur+'"]'))sel.value=cur;
   }
   if(window.speechSynthesis){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
   else{$("narr").disabled=true;$("narrHint").textContent="La lecture vocale n'est pas disponible sur ce navigateur."}
+  $("nlang").onchange=function(){nl=this.value;$("voice").value="auto";loadVoices();stopSpeech();qi=done=ni=0};
   $("narr").onchange=function(){narr=this.checked;if(!narr)stopSpeech()};
   $("rate").oninput=function(){rate=this.value/100;$("ratev").textContent=rate.toFixed(1).replace(".",",")+"×"};
   $("pitch").oninput=function(){pitch=this.value/100;$("pitchv").textContent=pitch.toFixed(2).replace(".",",")};
   $("autoSync").onchange=function(){autoSync=this.checked};
   function mkUtt(text){
     var u=new SpeechSynthesisUtterance(text),v=pickVoice();
-    u.lang=v?v.lang:"ar-SA";if(v)u.voice=v;u.rate=rate;u.pitch=pitch;
+    u.lang=v?v.lang:LANGS[nl][0];if(v)u.voice=v;u.rate=rate;u.pitch=pitch;
     return u;
   }
   function speak(text){

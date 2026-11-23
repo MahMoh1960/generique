@@ -1,23 +1,17 @@
-const C = "generique-v2";
-const A = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png"];
-self.addEventListener("install", e => {
-  e.waitUntil(caches.open(C).then(c => c.addAll(A)));
-  self.skipWaiting();
+// v2 : réseau d'abord, cache en secours (hors ligne). Purge les anciens caches.
+var CACHE="generique-v2";
+self.addEventListener("install",function(){self.skipWaiting()});
+self.addEventListener("activate",function(e){
+  e.waitUntil(caches.keys().then(function(keys){
+    return Promise.all(keys.filter(function(k){return k!==CACHE}).map(function(k){return caches.delete(k)}));
+  }).then(function(){return self.clients.claim()}));
 });
-self.addEventListener("activate", e => {
-  e.waitUntil(caches.keys().then(k => Promise.all(k.filter(x => x !== C).map(x => caches.delete(x)))));
-  self.clients.claim();
-});
-self.addEventListener("fetch", e => {
-  if (e.request.method !== "GET") return;
+self.addEventListener("fetch",function(e){
+  if(e.request.method!=="GET")return;
   e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request).then(res => {
-      const u = new URL(e.request.url);
-      if (u.origin === location.origin || u.host.endsWith("gstatic.com") || u.host.endsWith("googleapis.com")) {
-        const cp = res.clone();
-        caches.open(C).then(c => c.put(e.request, cp));
-      }
-      return res;
-    }).catch(() => caches.match("index.html")))
+    fetch(e.request).then(function(r){
+      var c=r.clone();caches.open(CACHE).then(function(x){x.put(e.request,c)});
+      return r;
+    }).catch(function(){return caches.match(e.request)})
   );
 });

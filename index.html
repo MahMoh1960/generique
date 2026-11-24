@@ -122,7 +122,7 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:inherit}
     <label class="sp">Voix <select id="voice"><option value="auto">Voix masculine (automatique)</option></select></label>
     <label class="sp">Vitesse de la voix <span class="num"><button type="button" class="btn rt" data-d="-0.1" aria-label="Voix plus lente">−</button><input type="number" id="rate" min="0.5" max="2" step="0.1" value="0.9"><button type="button" class="btn rt" data-d="0.1" aria-label="Voix plus rapide">+</button></span></label>
     <label class="sp">Hauteur <input type="range" id="pitch" min="50" max="120" value="85"><span id="pitchv">0,85</span></label>
-    <label class="sp ck"><input type="checkbox" id="autoSync"> Synchronisation automatique (le défilement attend la fin de chaque ligne)</label>
+    <label class="sp ck"><input type="checkbox" id="autoSync" checked> Synchronisation automatique (la voix démarre aussitôt, sans pause ; le défilement la suit)</label>
     <div class="row">
       <label class="btn" for="fileVoice" tabindex="0">Voix pour la vidéo (audio)</label>
       <input type="file" id="fileVoice" accept="audio/*">
@@ -281,7 +281,7 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:inherit}
     if(!last)last=t;
     var dt=(t-last)/1000;last=t;
     if(playing){
-      if(!narrHold())y-=speed*dt;
+      y-=speed*dt*narrHold();
       if(y<-roll.offsetHeight-20){y=-roll.offsetHeight-20;playing=false;$("pp").textContent="Terminé";showBar()}
     }
     roll.style.transform="translateY("+y+"px)";
@@ -431,7 +431,7 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:inherit}
 
   /* ---------- Narrateur (arabe, français, anglais américain) ---------- */
   var NT=(window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.TextToSpeech)||null;
-  var ps=[],spk=[],ni=0,qi=0,done=0,speaking=false,tok=0,voices=[],narr=false,rate=0.9,pitch=0.85,autoSync=false,voiceUrl=null,nl="ar";
+  var ps=[],spk=[],ni=0,qi=0,done=0,speaking=false,tok=0,voices=[],narr=false,rate=0.9,pitch=0.85,autoSync=true,voiceUrl=null,nl="ar";
   var LANGS={ar:["ar-SA",/^ar/i],fr:["fr-FR",/^fr/i],en:["en-US",/^en[-_]us/i]};
   var MALE=/hamed|shakir|salem|taim|fahed|hamdan|omar|maged|majed|naayf|tarik|bassel|laith|abdullah|youssef|thomas|paul|henri|claude|nicolas|antoine|jean|daniel|david|mark|guy|alex|fred|james|george|aaron|male|homme/i,
       FEMALE=/zariyah|salma|hoda|amina|fatima|laila|layla|maryam|reem|noura|sana|amany|zeina|amelie|audrey|marie|julie|denise|eloise|hortense|sonia|samantha|zira|susan|jenny|aria|emma|joanna|ava|karen|female|femme/i;
@@ -499,15 +499,19 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:inherit}
     });
   }
   function narrHold(){
-    if(!narr||!spk.length)return false;
-    var R=stage.clientHeight*0.5;
+    if(!narr||!spk.length)return 1;
+    var H=stage.clientHeight,R=H*0.6;
     function cy(i){var p=ps[spk[i].p];return y+p.offsetTop+p.offsetHeight/2}
     if(!autoSync){
-      while(qi<spk.length&&cy(qi)<=R){queueSpeak(spk[qi].t);qi++}
-      return false;
+      while(qi<spk.length&&cy(qi)<=H){queueSpeak(spk[qi].t);qi++}
+      return 1;
     }
-    if(!speaking){if(ni<spk.length&&cy(ni)<=R)speak(spk[ni].t);return false}
-    return ni+1<spk.length&&cy(ni+1)<=R;
+    /* la voix part tout de suite et garde toujours la phrase suivante en attente */
+    while(qi<spk.length&&qi<=done+1){queueSpeak(spk[qi].t);qi++}
+    if(done>=spk.length)return 1;
+    if(cy(done)>R)return 4;
+    if(done+1<spk.length&&cy(done+1)<=R)return 0;
+    return 1;
   }
   $("fileVoice").addEventListener("change",function(e){
     var f=e.target.files[0];if(!f)return;

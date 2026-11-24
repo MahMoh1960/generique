@@ -78,6 +78,13 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:inherit}
 #bar .num .btn{font-size:1.1rem;padding:4px 11px}
 #bar input[type=number]{width:62px;padding:6px;font-size:1rem}
 #bar .algs button{padding:6px 9px}
+body.film #tools,body.film #bar,body.film #menu{display:none!important}
+#cd{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:7rem;z-index:5}
+#guide{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.95);display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto}
+.gbox{max-width:520px;display:flex;flex-direction:column;gap:12px}
+.gbox h2{margin:0;font-size:1.5rem}
+.gbox ol{margin:0;padding-left:22px}
+.gbox li{margin:8px 0;line-height:1.4}
 </style>
 </head>
 <body>
@@ -91,6 +98,13 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:inherit}
   <button role="menuitem" id="miVid" hidden>Partager la vidéo</button>
 </div>
 <div id="toast" role="status"></div>
+<div id="guide" hidden><div class="gbox"><h2>Filmer avec le son</h2><ol>
+<li>Ouvrez le panneau rapide (glissez deux fois depuis le haut) et appuyez sur « Enregistreur d'écran ».</li>
+<li>Choisissez le son « Sons médias » (ou « Sons médias et micro » si la voix n'est pas captée), puis appuyez sur « Enregistrer ».</li>
+<li>Revenez ici et appuyez sur « Démarrer » : après un compte à rebours de 5 secondes, le générique et la voix commencent.</li>
+<li>À la fin, arrêtez l'enregistreur depuis la barre d'état. La vidéo est dans la Galerie.</li></ol>
+<p class="hint">Pour sortir pendant le tournage, maintenez le doigt appuyé sur l'écran.</p>
+<div class="row"><button class="btn main" id="gGo" type="button">Démarrer</button><button class="btn" id="gNo" type="button">Annuler</button></div></div></div>
 <main id="setup">
   <h1>Générique défilant</h1>
   <p class="hint">Collez votre texte ou importez un fichier .txt. Une ligne vide crée un espace.</p>
@@ -142,6 +156,7 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:inherit}
   <div class="row">
     <button class="btn main" id="go">Lancer le générique</button>
     <button class="btn" id="rec">Enregistrer en MP4</button>
+    <button class="btn" id="film" type="button">Filmer avec le son (enregistreur d'écran)</button>
   </div>
   <div id="recbox" hidden>
     <p class="hint" id="recmsg" role="status"></p>
@@ -154,6 +169,7 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:inherit}
 </main>
 
 <section id="stage" aria-label="Générique">
+  <div id="cd" hidden></div>
   <div id="roll"></div>
   <div id="bar">
     <button class="btn" id="pp">Pause</button>
@@ -274,6 +290,7 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:inherit}
     });
   }
   function start(){
+    try{if(navigator.wakeLock)navigator.wakeLock.request("screen").catch(function(){})}catch(e){}
     y=stage.clientHeight;playing=true;last=0;ni=0;done=0;qi=0;stopSpeech();$("pp").textContent="Pause";
     cancelAnimationFrame(raf);raf=requestAnimationFrame(tick);
   }
@@ -282,7 +299,7 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:inherit}
     var dt=(t-last)/1000;last=t;
     if(playing){
       y-=speed*dt*narrHold();
-      if(y<-roll.offsetHeight-20){y=-roll.offsetHeight-20;playing=false;$("pp").textContent="Terminé";showBar()}
+      if(y<-roll.offsetHeight-20){y=-roll.offsetHeight-20;playing=false;$("pp").textContent="Terminé";showBar();if(document.body.classList.contains("film"))setTimeout(exitFilm,3000)}
     }
     roll.style.transform="translateY("+y+"px)";
     raf=requestAnimationFrame(tick);
@@ -293,6 +310,33 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:inherit}
     if(!txt.value.trim()&&!logo){txt.focus();return}
     applyStyle();build();prepNarr();setup.style.display="none";stage.style.display="block";start();showBar();
   };
+  var filmT=0,lpT=0;
+  function exitFilm(){clearInterval(filmT);clearTimeout(lpT);document.body.classList.remove("film");$("cd").hidden=true}
+  $("film").onclick=function(){
+    if(!txt.value.trim()&&!logo){txt.focus();return}
+    $("guide").hidden=false;
+  };
+  $("gNo").onclick=function(){$("guide").hidden=true};
+  $("gGo").onclick=function(){
+    $("guide").hidden=true;
+    if(window.speechSynthesis||NT){narr=true;$("narr").checked=true}
+    applyStyle();build();prepNarr();setup.style.display="none";stage.style.display="block";
+    document.body.classList.add("film");
+    playing=false;cancelAnimationFrame(raf);y=stage.clientHeight;roll.style.transform="translateY("+y+"px)";
+    var n=5,cd=$("cd");cd.style.color=fg;cd.textContent=n;cd.hidden=false;
+    clearInterval(filmT);
+    filmT=setInterval(function(){
+      n--;
+      if(n>0){cd.textContent=n;return}
+      clearInterval(filmT);cd.hidden=true;start();
+    },1000);
+  };
+  stage.addEventListener("pointerdown",function(){
+    if(!document.body.classList.contains("film"))return;
+    clearTimeout(lpT);
+    lpT=setTimeout(function(){exitFilm();$("back").click();},900);
+  });
+  ["pointerup","pointercancel","pointerleave"].forEach(function(ev){stage.addEventListener(ev,function(){clearTimeout(lpT)})});
   $("pp").onclick=function(){
     if(y<=-roll.offsetHeight-20){start();return}
     playing=!playing;last=0;if(!playing)stopSpeech();this.textContent=playing?"Pause":"Reprendre";showBar();

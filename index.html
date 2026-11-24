@@ -133,9 +133,9 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:inherit}
   </div>
   <label class="sp">Qualité de la vidéo
     <select id="vres">
-      <option value="270" selected>270p (très léger)</option>
+      <option value="270">270p (très léger)</option>
       <option value="360">360p</option>
-      <option value="480">480p</option>
+      <option value="480" selected>480p</option>
       <option value="720">720p HD</option>
     </select>
   </label>
@@ -339,15 +339,33 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:inherit}
     if(!mime){msg("Ce navigateur ne permet pas l'enregistrement vidéo. Essayez Chrome, Edge ou Safari récent.");return}
     recBusy=true;recCancel=false;recBlob=null;
     $("recsave").hidden=true;$("recstop").hidden=false;$("rec").disabled=true;$("progfill").style.width="0";
-    var H=+$("vres").value||270,W=Math.round(H*16/9/2)*2,K=H/720,BR={270:800000,360:1200000,480:2000000,720:4000000},LH=Math.round(70*ts*K),FONT='500 '+Math.round(44*ts*K)+'px '+fam;
+    var Q=+$("vres").value||480,iw0=Math.max(window.innerWidth,200),ih0=Math.max(window.innerHeight,300),W,H;
+    if(iw0<=ih0){W=Q;H=Math.round(Q*ih0/iw0)}else{H=Q;W=Math.round(Q*iw0/ih0)}
+    W=Math.round(W/2)*2;H=Math.round(H/2)*2;
+    var K=W/iw0,BRS={270:1200000,360:2000000,480:3000000,720:6000000};
+    var FS=Math.min(Math.max(20.8,0.034*iw0),38.4)*ts*K,LH=FS*1.6,FONT='600 '+FS.toFixed(1)+'px '+fam;
     try{await document.fonts.load(FONT)}catch(e){}
     var img=null,ih=0,iw=0;
     if(logo){
-      try{img=await loadImg(logo);var s=Math.min(1,380*K/img.width,288*K/img.height);iw=img.width*s;ih=img.height*s}catch(e){img=null}
+      try{img=await loadImg(logo);var s=Math.min(1,Math.min(0.6*iw0,360)*K/img.width,0.4*H/img.height);iw=img.width*s;ih=img.height*s}catch(e){img=null}
     }
-    var lines=txt.value.replace(/\r/g,"").split("\n").map(function(l){return l.trim()});
+    var cv=document.createElement("canvas");cv.width=W;cv.height=H;
+    var g=cv.getContext("2d");
+    var PAD=Math.round(W*0.07),MAXW=W-2*PAD;
+    g.font=FONT;try{g.letterSpacing=(0.03*FS).toFixed(1)+"px"}catch(e){}
+    var lines=[];
+    txt.value.replace(/\r/g,"").split("\n").forEach(function(l){
+      l=l.trim();
+      if(!l){lines.push("");return}
+      var cur="";
+      l.split(/\s+/).forEach(function(w){
+        var t=cur?cur+" "+w:w;
+        if(cur&&g.measureText(t).width>MAXW){lines.push(cur);cur=w}else cur=t;
+      });
+      lines.push(cur);
+    });
     var headH=img?ih+H*0.14:0,total=headH+lines.length*LH;
-    var vs=speed*(H/Math.max(window.innerHeight,300));
+    var vs=speed*K;
     var dur=(H+total+20)/vs+0.6;
     var aud=null,actx=null;
     if(voiceUrl){
@@ -356,8 +374,6 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:inherit}
       if(aud.error||!isFinite(aud.duration)||aud.duration<1){aud=null}
       else{vs=(H+total+20)/aud.duration;dur=aud.duration+0.6}
     }
-    var cv=document.createElement("canvas");cv.width=W;cv.height=H;
-    var g=cv.getContext("2d");
     var chunks=[],rec,stream=cv.captureStream(30);
     if(aud){
       try{
@@ -367,7 +383,7 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:inherit}
         adest.stream.getAudioTracks().forEach(function(t){stream.addTrack(t)});
       }catch(e){aud=null}
     }
-    try{rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:BR[H]||800000,audioBitsPerSecond:64000})}
+    try{rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:BRS[Q]||3000000,audioBitsPerSecond:64000})}
     catch(e){msg("Impossible de démarrer l'enregistrement.");recBusy=false;$("rec").disabled=false;$("recstop").hidden=true;return}
     recExt=mime.indexOf("mp4")>-1?"mp4":"webm";
     rec.ondataavailable=function(e){if(e.data&&e.data.size)chunks.push(e.data)};
@@ -380,10 +396,10 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:inherit}
       for(var i=0;i<lines.length;i++){
         var ly=y0+headH+i*LH+LH/2;
         if(ly<-LH||ly>H+LH||!lines[i])continue;
-        g.fillText(lines[i],tx,ly,W*0.86);
+        g.fillText(lines[i],tx,ly);
       }
     }
-    msg((recExt==="mp4"?"Enregistrement en cours":"Enregistrement en WebM (ce navigateur ne produit pas de MP4)")+" — gardez cet onglet visible jusqu'à la fin."+(voiceUrl?(aud?" Voix intégrée.":" Fichier audio illisible : vidéo sans voix."):""));
+    msg((recExt==="mp4"?"Enregistrement en cours":"Enregistrement en WebM (ce navigateur ne produit pas de MP4)")+" — gardez cet onglet visible jusqu'à la fin."+(voiceUrl?(aud?" Voix intégrée.":" Fichier audio illisible : vidéo sans voix."):(narr?" Sans son : la voix du narrateur ne peut pas être enregistrée.":"")));
     frame(H);rec.start(250);
     if(aud){try{actx.resume();aud.play()}catch(e){}}
     var t0=performance.now();

@@ -120,7 +120,7 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:inherit}
     <label class="sp ck"><input type="checkbox" id="narr"> Narrateur (lecture synchronisée avec le défilement)</label>
     <label class="sp">Langue <select id="nlang"><option value="ar">Arabe</option><option value="fr">Français</option><option value="en">Anglais (américain)</option></select></label>
     <label class="sp">Voix <select id="voice"><option value="auto">Voix masculine (automatique)</option></select></label>
-    <label class="sp">Débit <input type="range" id="rate" min="60" max="140" value="90"><span id="ratev">0,9×</span></label>
+    <label class="sp">Vitesse de la voix <span class="num"><button type="button" class="btn rt" data-d="-0.1" aria-label="Voix plus lente">−</button><input type="number" id="rate" min="0.5" max="2" step="0.1" value="0.9"><button type="button" class="btn rt" data-d="0.1" aria-label="Voix plus rapide">+</button></span></label>
     <label class="sp">Hauteur <input type="range" id="pitch" min="50" max="120" value="85"><span id="pitchv">0,85</span></label>
     <label class="sp ck"><input type="checkbox" id="autoSync"> Synchronisation automatique (le défilement attend la fin de chaque ligne)</label>
     <div class="row">
@@ -159,6 +159,7 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:inherit}
     <button class="btn" id="pp">Pause</button>
     <button class="btn" id="rp">Rejouer</button>
     <span class="num"><button type="button" class="btn st" data-d="-5" aria-label="Moins vite">−</button><input type="number" id="speed" min="20" max="200" step="5" value="60" inputmode="numeric" aria-label="Vitesse"><button type="button" class="btn st" data-d="5" aria-label="Plus vite">+</button></span>
+    <span class="cl">Voix <span class="num"><button type="button" class="btn rt" data-d="-0.1" aria-label="Voix plus lente">−</button><input type="number" id="rate2" min="0.5" max="2" step="0.1" value="0.9" aria-label="Vitesse de la voix"><button type="button" class="btn rt" data-d="0.1" aria-label="Voix plus rapide">+</button></span></span>
     <div class="swg seg algs" role="radiogroup" aria-label="Alignement du texte"></div>
     <label class="cl">Texte <input type="color" id="barFg" value="#ffffff" aria-label="Couleur du texte"></label>
     <label class="cl">Fond <input type="color" id="barBg" value="#000000" aria-label="Couleur du fond"></label>
@@ -404,8 +405,19 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:inherit}
     $("recsave").hidden=false;
   };
   $("recstop").onclick=function(){recCancel=true};
+  function b64(blob){return new Promise(function(ok,ko){var r=new FileReader();r.onload=function(){ok(String(r.result).split(",")[1])};r.onerror=ko;r.readAsDataURL(blob)})}
+  async function nativeShare(){
+    var P=window.Capacitor&&Capacitor.Plugins;
+    if(!P||!P.Filesystem||!P.Share)return false;
+    try{
+      var f=await P.Filesystem.writeFile({path:"generique."+recExt,data:await b64(recBlob),directory:"CACHE"});
+      await P.Share.share({title:"Générique",files:[f.uri]});
+    }catch(e){var m=String(e&&e.message||e);if(!/cancel/i.test(m))msg("Enregistrement impossible : "+m)}
+    return true;
+  }
   $("recsave").onclick=async function(){
     if(!recBlob)return;
+    if(await nativeShare())return;
     var name="generique."+recExt,dl=null;
     try{if(window.claude&&claude.use)dl=await claude.use("downloads")}catch(e){}
     if(dl){
@@ -441,7 +453,12 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:inherit}
   else if(!NT){$("narrHint").textContent="La lecture vocale n'est pas disponible sur cet appareil."}
   $("nlang").onchange=function(){nl=this.value;$("voice").value="auto";loadVoices();stopSpeech();qi=done=ni=0};
   $("narr").onchange=function(){narr=this.checked;if(!narr)stopSpeech()};
-  $("rate").oninput=function(){rate=this.value/100;$("ratev").textContent=rate.toFixed(1).replace(".",",")+"×"};
+  function setRate(v){v=Math.max(0.5,Math.min(2,Math.round((+v||0.9)*10)/10));rate=v;$("rate").value=v;$("rate2").value=v}
+  ["rate","rate2"].forEach(function(id){
+    $(id).oninput=function(){var n=+this.value;if(n>=0.5&&n<=2){rate=n;$(id==="rate"?"rate2":"rate").value=n}};
+    $(id).onchange=function(){setRate(this.value)};
+  });
+  document.querySelectorAll(".rt").forEach(function(b){b.onclick=function(){setRate(rate+(+b.dataset.d))}});
   $("pitch").oninput=function(){pitch=this.value/100;$("pitchv").textContent=pitch.toFixed(2).replace(".",",")};
   $("autoSync").onchange=function(){autoSync=this.checked};
   function mkUtt(text){
@@ -548,6 +565,7 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:inherit}
   $("miVid").onclick=async function(){
     closeMenu();
     if(!recBlob)return;
+    if(await nativeShare())return;
     var f=new File([recBlob],"generique."+recExt,{type:recBlob.type});
     try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:"Générique"});return}}
     catch(e){if(e&&e.name==="AbortError")return}

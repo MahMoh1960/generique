@@ -31,7 +31,7 @@ jobs:
       - name: Installer Capacitor
         run: |
           npm init -y
-          npm install @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6 @capacitor-community/text-to-speech@5
+          npm install @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6 @capacitor-community/text-to-speech@5 @capacitor/filesystem@6 @capacitor/share@6
 
       - name: Créer le projet Android
         run: |
